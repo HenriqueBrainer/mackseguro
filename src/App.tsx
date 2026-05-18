@@ -18,6 +18,7 @@ import AuthSignIn from "./pages/AuthSignIn.tsx";
 import AuthSignUp from "./pages/AuthSignUp.tsx";
 import CourseAccessGate from "./components/auth/CourseAccessGate.tsx";
 import Perfil from "./pages/Perfil.tsx";
+import FontSizeControl from "./components/layout/FontSizeControl.tsx";
 
 function NotFoundPage() {
   return (
@@ -42,6 +43,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
+      <FontSizeControl />
       <main className="page-shell flex-1">{children}</main>
       <Footer />
     </div>
