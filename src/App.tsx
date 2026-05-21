@@ -5,6 +5,7 @@ import { setSupabaseTokenGetter } from "./lib/supabaseConfig.ts";
 import Navbar from "./components/layout/Navbar.tsx";
 import Footer from "./components/layout/Footer.tsx";
 import CourseAccessGate from "./components/auth/CourseAccessGate.tsx";
+import FontSizeControl from "./components/layout/FontSizeControl.tsx";
 import { syncRemoteProgressToLocal } from "./lib/userData.ts";
 
 const Home = React.lazy(() => import("./pages/Home.tsx"));
@@ -43,6 +44,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
+      <FontSizeControl />
       <main className="page-shell flex-1">{children}</main>
       <Footer />
     </div>
