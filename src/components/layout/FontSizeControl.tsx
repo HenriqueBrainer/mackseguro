@@ -1,10 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { ZoomIn, ZoomOut } from 'lucide-react';
 
+let selectedFontSize = 100;
+
 const FontSizeControl: React.FC = () => {
-  const [fontSize, setFontSize] = useState<number>(100); // Porcentagem do tamanho original
+  const [fontSize, setFontSize] = useState<number>(selectedFontSize); // Porcentagem do tamanho original
 
   useEffect(() => {
+    const previousFontSize = document.documentElement.style.fontSize;
+
+    return () => {
+      document.documentElement.style.fontSize = previousFontSize;
+    };
+  }, []);
+
+  useEffect(() => {
+    selectedFontSize = fontSize;
     // Aplica o tamanho da fonte ao elemento raiz (html)
     // Isso faz com que todas as unidades 'rem' do site aumentem proporcionalmente
     document.documentElement.style.fontSize = `${fontSize}%`;
