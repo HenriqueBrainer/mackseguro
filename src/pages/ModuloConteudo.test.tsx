@@ -1,7 +1,8 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Link, MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { fetchRemoteForumComments } from "../lib/forumRemote.ts";
 import ModuloConteudo from "./ModuloConteudo.tsx";
 
 const clerkState = vi.hoisted<{
@@ -28,9 +29,22 @@ const clerkState = vi.hoisted<{
   },
 }));
 
+const forumRemoteState = vi.hoisted(() => ({
+  canRead: false,
+  comments: null as unknown[] | null,
+}));
+
 vi.mock("@clerk/react", () => ({
   useUser: () => clerkState,
   SignInButton: ({ children }: { children: unknown }) => <>{children}</>,
+}));
+
+vi.mock("../lib/forumRemote.ts", () => ({
+  addRemoteForumComment: vi.fn(),
+  canReadForumFromRemote: () => forumRemoteState.canRead,
+  fetchRemoteForumComments: vi.fn(async () => forumRemoteState.comments),
+  reportRemoteForumComment: vi.fn(),
+  toggleRemoteForumLike: vi.fn(),
 }));
 
 function setAuthSignedIn() {
@@ -65,12 +79,38 @@ function renderModulo() {
 describe("ModuloConteudo", () => {
   beforeEach(() => {
     setAuthSignedIn();
+    forumRemoteState.canRead = false;
+    forumRemoteState.comments = null;
   });
 
   it("exibe player de video funcional no modulo", () => {
     renderModulo();
 
     expect(screen.getByTitle(/video do modulo/i)).toBeInTheDocument();
+  });
+
+  it("exibe comentarios mockados do forum quando nao ha dados locais", async () => {
+    renderModulo();
+
+    expect(await screen.findByText(/maria santos/i)).toBeInTheDocument();
+    expect(screen.getByText(/nunca explicaram isso de forma tão clara/i)).toBeInTheDocument();
+  });
+
+  it("mantem o forum remoto vazio quando a consulta retorna sem comentarios", async () => {
+    forumRemoteState.canRead = true;
+    forumRemoteState.comments = [];
+    const fetchRemoteForumCommentsMock = vi.mocked(fetchRemoteForumComments);
+
+    renderModulo();
+
+    await waitFor(() => expect(fetchRemoteForumCommentsMock).toHaveBeenCalledTimes(1));
+    await act(async () => {
+      await fetchRemoteForumCommentsMock.mock.results[0].value;
+    });
+
+    expect(screen.getByText(/0 tópicos/i)).toBeInTheDocument();
+    expect(screen.queryByText(/maria santos/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/nunca explicaram isso de forma tão clara/i)).not.toBeInTheDocument();
   });
 
   it("publica uma nova mensagem no forum", async () => {

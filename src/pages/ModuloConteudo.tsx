@@ -184,8 +184,8 @@ function ModuloConteudoValido({ slugValue, modId, trilha, modulo, conteudo }: Mo
       }
     }
 
-    setForumComments(getForumComments(slugValue, modId, []));
-  }, [modId, slugValue, useRemoteForum]);
+    setForumComments(getForumComments(slugValue, modId, conteudo.forum));
+  }, [conteudo, modId, slugValue, useRemoteForum]);
 
   useEffect(() => {
     void refreshForum();
@@ -197,9 +197,9 @@ function ModuloConteudoValido({ slugValue, modId, trilha, modulo, conteudo }: Mo
     }
 
     return subscribeToUserDataChanges(() => {
-      setForumComments(getForumComments(slugValue, modId, []));
+      setForumComments(getForumComments(slugValue, modId, conteudo.forum));
     });
-  }, [modId, slugValue, useRemoteForum]);
+  }, [conteudo, modId, slugValue, useRemoteForum]);
 
   useEffect(() => {
     if (useRemoteForum || !isLoaded || !isSignedIn || !user?.id) {
@@ -208,7 +208,7 @@ function ModuloConteudoValido({ slugValue, modId, trilha, modulo, conteudo }: Mo
 
     const migratedCount = migrateAnonymousPosts(user.id, currentUserName);
     if (migratedCount > 0) {
-      setForumComments(getForumComments(slugValue, modId, []));
+      setForumComments(getForumComments(slugValue, modId, conteudo.forum));
     }
   }, [currentUserName, isLoaded, isSignedIn, modId, slugValue, useRemoteForum, user?.id]);
 
