@@ -5,6 +5,7 @@ import { setSupabaseTokenGetter } from "./lib/supabaseConfig.ts";
 import Navbar from "./components/layout/Navbar.tsx";
 import Footer from "./components/layout/Footer.tsx";
 import CourseAccessGate from "./components/auth/CourseAccessGate.tsx";
+import { syncRemoteProgressToLocal } from "./lib/userData.ts";
 
 const Home = React.lazy(() => import("./pages/Home.tsx"));
 const Trilhas = React.lazy(() => import("./pages/Trilhas.tsx"));
@@ -17,6 +18,7 @@ const ModuloConteudo = React.lazy(() => import("./pages/ModuloConteudo.tsx"));
 const AuthSignIn = React.lazy(() => import("./pages/AuthSignIn.tsx"));
 const AuthSignUp = React.lazy(() => import("./pages/AuthSignUp.tsx"));
 const Perfil = React.lazy(() => import("./pages/Perfil.tsx"));
+const CertificadoValidacao = React.lazy(() => import("./pages/CertificadoValidacao.tsx"));
 
 function NotFoundPage() {
   return (
@@ -46,8 +48,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
-
-import { syncRemoteProgressToLocal } from "./lib/userData.ts";
 
 function ClerkSupabaseIntegration() {
   const { getToken, userId } = useAuth();
@@ -89,6 +89,7 @@ function App() {
           <Route path="/eventos" element={<AppLayout><Eventos /></AppLayout>} />
           <Route path="/sobre" element={<AppLayout><Sobre /></AppLayout>} />
           <Route path="/perfil" element={<AppLayout><CourseAccessGate><Perfil /></CourseAccessGate></AppLayout>} />
+          <Route path="/certificados/:certificateCode" element={<AppLayout><CertificadoValidacao /></AppLayout>} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </React.Suspense>
